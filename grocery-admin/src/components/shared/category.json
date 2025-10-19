@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_shared_categories",
+  "info": {
+    "displayName": "category"
+  },
+  "options": {},
+  "attributes": {
+    "Name": {
+      "type": "string"
+    },
+    "Icon": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "colour": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
