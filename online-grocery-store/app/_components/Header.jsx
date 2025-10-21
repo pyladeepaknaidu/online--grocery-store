@@ -19,20 +19,30 @@ function Header() {
     getCategoryList();
   },[])
   const getCategoryImage = (category) => {
-    // Check if category has an image in Strapi
-    if (category.attributes && category.attributes.image && category.attributes.image.data) {
-      const imageUrl = category.attributes.image.data.attributes.url;
+    // Check if category has an Icon in Strapi (note: it's "Icon" not "image")
+    if (category.Icon && category.Icon.length > 0 && category.Icon[0].url) {
+      const imageUrl = category.Icon[0].url;
+      const fullImageUrl = `http://localhost:1337${imageUrl}`;
+      console.log(`Loading icon for ${category.name}:`, fullImageUrl);
       return (
         <Image 
-          src={`http://localhost:1337${imageUrl}`} 
-          alt={category.attributes.name}
+          src={fullImageUrl} 
+          alt={category.name}
           width={20}
           height={20}
           className="rounded"
+          onError={(e) => {
+            console.error(`Failed to load image for ${category.name}:`, fullImageUrl);
+            e.target.style.display = 'none';
+          }}
+          onLoad={() => {
+            console.log(`Successfully loaded image for ${category.name}`);
+          }}
         />
       );
     }
     // Fallback to default icon if no image
+    console.log(`No icon found for ${category.name}, using fallback`);
     return <LayoutGrid className="h-4 w-4" />;
   };
 
@@ -41,8 +51,13 @@ function Header() {
       console.log("categoryList Resp:",resp.data);
       // The API returns {data: [...], meta: {...}}, so we need resp.data.data
       if(resp.data && resp.data.data && Array.isArray(resp.data.data)){
+        console.log("Setting category list:", resp.data.data);
+        resp.data.data.forEach((category, index) => {
+          console.log(`Category ${index}:`, category.name, "Icon:", category.Icon);
+        });
         setCategoryList(resp.data.data);
       } else {
+        console.log("No valid category data found");
         setCategoryList([]);
       }
     }).catch(error=>{
@@ -75,7 +90,7 @@ function Header() {
       <DropdownMenuItem key={index} className="flex items-center gap-2 cursor-pointer hover:bg-gray-100">
         {getCategoryImage(category)}
         <h2 className="text-sm font-medium">
-          {category.attributes?.name || category.name}
+          {category.name}
         </h2>
       </DropdownMenuItem>
     )) : (
@@ -109,8 +124,8 @@ function Header() {
         </h2>
         
         {/* Login Button */}
-        <Button className='bg-black text-white px-2 py-2 hover:bg-gray-800'> 
-          Login here
+        <Button className='bg-green-600 text-white px-2 py-2 hover:bg-green-700'> 
+          Login 
         </Button>
       </div>
     </div>
